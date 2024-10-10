@@ -134,9 +134,7 @@ int main(void)
     UserApp3RunActiveState();
         
     /* System sleep */
-    HEARTBEAT_OFF();
     SystemSleep();
-    HEARTBEAT_ON();
     
   } /* end while(1) main super loop */
   

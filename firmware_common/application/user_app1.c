@@ -62,17 +62,28 @@ Variable names shall start with "UserApp1_<type>" and be declared as static.
 static fnCode_type UserApp1_pfStateMachine;               /*!< @brief The state machine function pointer */
 //static u32 UserApp1_u32Timeout;                           /*!< @brief Timeout counter used across states */
 
+static const u16 UserApp1_au16HeartBeatPeriod[U8_HEARTBEAT_PERIOD_ARRAY_SIZE] = {
+  U16_2HZ_PERIOD_MS,
+  U16_4HZ_PERIOD_MS,
+  U16_8HZ_PERIOD_MS,
+  U16_16HZ_PERIOD_MS,
+  U16_32HZ_PERIOD_MS};
+
+static bool UserApp1_bLightIsOn;
+static u16 UserApp1_u16Counter;
+static u16 UserApp1_u16LightCounter;
+static u8 UserApp1_u8Index;
 
 /**********************************************************************************************************************
 Function Definitions
 **********************************************************************************************************************/
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-/*! @publicsection */                                                                                            
+/*! @publicsection */
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-/*! @protectedsection */                                                                                            
+/*! @protectedsection */
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 /*!--------------------------------------------------------------------------------------------------------------------
@@ -92,6 +103,20 @@ Promises:
 */
 void UserApp1Initialize(void)
 {
+  /* Turn all LEDs and LCD backlight colors off */
+  for(u8 i = 0; i < U8_TOTAL_LEDS; ++i)
+  {
+    LedOff(i);
+  }
+
+  /* Turn the heartbeat LED off */
+  HEARTBEAT_OFF();
+  UserApp1_bLightIsOn = FALSE;
+
+  UserApp1_u16Counter = 0;
+  UserApp1_u16LightCounter = 0;
+  UserApp1_u8Index = 0;
+
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -102,10 +127,8 @@ void UserApp1Initialize(void)
     /* The task isn't properly initialized, so shut it down and don't run */
     UserApp1_pfStateMachine = UserApp1SM_Error;
   }
-
 } /* end UserApp1Initialize() */
 
-  
 /*!----------------------------------------------------------------------------------------------------------------------
 @fn void UserApp1RunActiveState(void)
 
@@ -124,14 +147,12 @@ Promises:
 void UserApp1RunActiveState(void)
 {
   UserApp1_pfStateMachine();
-
 } /* end UserApp1RunActiveState */
 
 
 /*------------------------------------------------------------------------------------------------------------------*/
-/*! @privatesection */                                                                                            
+/*! @privatesection */
 /*--------------------------------------------------------------------------------------------------------------------*/
-
 
 /**********************************************************************************************************************
 State Machine Function Definitions
@@ -140,19 +161,43 @@ State Machine Function Definitions
 /* What does this state do? */
 static void UserApp1SM_Idle(void)
 {
-     
+  if(++UserApp1_u16Counter == U16_HEARTBEAT_PERIOD_COUNTER_MS)
+  {
+    UserApp1_u16Counter = 0;
+    if(++UserApp1_u8Index == U8_HEARTBEAT_PERIOD_ARRAY_SIZE)
+    {
+      UserApp1_u8Index = 0;
+    }
+  }
+
+  if(++UserApp1_u16LightCounter >= UserApp1_au16HeartBeatPeriod[UserApp1_u8Index])
+  {
+    UserApp1_u16LightCounter = 0;
+    UserApp1SM_ToggleHeartBeatLed();
+  }
 } /* end UserApp1SM_Idle() */
-     
 
 /*-------------------------------------------------------------------------------------------------------------------*/
 /* Handle an error */
-static void UserApp1SM_Error(void)          
+static void UserApp1SM_Error(void)
 {
-  
 } /* end UserApp1SM_Error() */
 
-
-
+/*-------------------------------------------------------------------------------------------------------------------*/
+/* Toggle heartbeat LED */
+static void UserApp1SM_ToggleHeartBeatLed(void)
+{
+  if(UserApp1_bLightIsOn)
+  {
+    HEARTBEAT_OFF();
+    UserApp1_bLightIsOn = FALSE;
+  }
+  else
+  {
+    HEARTBEAT_ON();
+    UserApp1_bLightIsOn = TRUE;
+  }
+} /* end UserApp1SM_ToggleHeartBeatLed() */
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* End of File                                                                                                        */
