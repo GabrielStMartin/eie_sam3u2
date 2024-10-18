@@ -42,20 +42,23 @@ void UserApp1RunActiveState(void);
 /*------------------------------------------------------------------------------------------------------------------*/
 /*! @privatesection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
-
+static void UserApp1SetAllLightsOff(void);
+static void UserApp1SetBinaryCounterLeds(u8 aValue);
+static void UserApp1SetLcdBakclight(u8 aValue);
 
 /***********************************************************************************************************************
 State Machine Declarations
 ***********************************************************************************************************************/
-static void UserApp1SM_Idle(void);    
-static void UserApp1SM_Error(void);         
-
-
+static void UserApp1SM_Idle(void);
+static void UserApp1SM_Error(void);
 
 /**********************************************************************************************************************
 Constants / Definitions
 **********************************************************************************************************************/
-
+#define U16_BLINK_PERIOD_MS ((u16)250)
+#define U8_BINARY_COUNTER_MAX ((u8)16)
+#define U8_BINARY_COUNTER_LED_ARR_SZ ((u8)4)
+#define U8_LCD_BACKLIGHT_COLOR_MAX ((u8)8)
 
 #endif /* __USER_APP1_H */
 
