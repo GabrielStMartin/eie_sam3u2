@@ -61,7 +61,7 @@ int main(void)
   PWMSetupAudio();
   InterruptSetup();
   SysTickSetup();
-  
+
   /* Driver initialization */
   MessagingInitialize();
   UartInitialize();
@@ -86,7 +86,7 @@ int main(void)
 #if defined(EIE_DOTMATRIX) && !defined(EIE_NO_CAPTOUCH)
   CapTouchInitialize();
 #endif /* EIE_DOTMATRIX */
- 
+
   /* Application initialization */
   BladeApiInitialize();
   UserApp1Initialize();
@@ -96,7 +96,7 @@ int main(void)
   /* Exit initialization */
   SystemStatusReport();
   G_u32SystemFlags &= ~_SYSTEM_INITIALIZING;
-  
+
   /* Super loop */  
   while(1)
   {
@@ -132,18 +132,13 @@ int main(void)
     UserApp1RunActiveState();
     UserApp2RunActiveState();
     UserApp3RunActiveState();
-        
+ 
     /* System sleep */
-    HEARTBEAT_OFF();
     SystemSleep();
-    HEARTBEAT_ON();
-    
+
   } /* end while(1) main super loop */
   
 } /* end main() */
-
-
-
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* End of File */
