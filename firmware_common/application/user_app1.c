@@ -60,6 +60,10 @@ Variable names shall start with "UserApp1_<type>" and be declared as static.
 static fnCode_type UserApp1_pfStateMachine;               /*!< @brief The state machine function pointer */
 //static u32 UserApp1_u32Timeout;                           /*!< @brief Timeout counter used across states */
 
+static u16 UserApp1_u16Counter;
+static LedRateType UserApp1_LedRateValue;
+static LedRateType UserApp1_LedRateIncrement;
+
 /**********************************************************************************************************************
 Function Definitions
 **********************************************************************************************************************/
@@ -91,8 +95,14 @@ void UserApp1Initialize(void)
 {
   UserApp1SetAllLightsOff();
 
+  LedOn(LCD_RED);
+  UserApp1_u16Counter = 0;
+  UserApp1_LedRateValue = LED_PWM_RATE_MIN;
+  UserApp1_LedRateIncrement = 1;
+  LedPWM(LCD_BLUE, UserApp1_LedRateValue);
+
   /* If good initialization, set state to Idle */
-  if( 1 )
+  if(1)
   {
     UserApp1_pfStateMachine = UserApp1SM_Idle;
   }
@@ -141,6 +151,16 @@ State Machine Function Definitions
 /* What does this state do? */
 static void UserApp1SM_Idle(void)
 {
+  if(++UserApp1_u16Counter == U16_PWM_RATE_PERIOD_MS)
+  {
+    UserApp1_u16Counter = 0;
+    UserApp1_LedRateValue += UserApp1_LedRateIncrement;
+    LedPWM(LCD_BLUE, UserApp1_LedRateValue);
+    if ((UserApp1_LedRateValue == LED_PWM_RATE_MIN) || (UserApp1_LedRateValue == LED_PWM_RATE_MAX))
+    {
+      UserApp1_LedRateIncrement = -UserApp1_LedRateIncrement;
+    }
+  }
 } /* end UserApp1SM_Idle() */
 
 /*-------------------------------------------------------------------------------------------------------------------*/

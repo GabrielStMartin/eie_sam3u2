@@ -48,10 +48,12 @@ State Machine Declarations
 static void UserApp1SM_Idle(void);
 static void UserApp1SM_Error(void);
 
-
 /**********************************************************************************************************************
 Constants / Definitions
 **********************************************************************************************************************/
+#define U16_PWM_RATE_PERIOD_MS ((u16)40)
+#define LED_PWM_RATE_MIN ((LedRateType)0)
+#define LED_PWM_RATE_MAX ((LedRateType)20)
 
 #endif /* __USER_APP1_H */
 
